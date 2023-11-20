@@ -41,6 +41,8 @@ const gameBoard = (function() {
         }
     }
 
+    generateBoard();
+
     const resetBoard = function() {
         board = [];
         generateBoard();
@@ -108,56 +110,38 @@ const game = (function() {
     }
 
     const submitUserInput = function(userInput) {
-        if (userInput === 'quit') {
-            return 0;
-        } else {
-            const isValidInput = validInput(userInput);
-            if (isValidInput) {
-                const formattedInput = convertInputToArray(userInput);
-                if (gameBoard.cellIsUnoccupied(formattedInput)) {
-                    gameBoard.updateCell(formattedInput, player.players[currentPlayer])
-                    changePlayer();
-                    return 1;
-                } else {
-                    return 2;
-                }
+        const isValidInput = validInput(userInput);
+        if (isValidInput) {
+            const formattedInput = convertInputToArray(userInput);
+            if (gameBoard.cellIsUnoccupied(formattedInput)) {
+                gameBoard.updateCell(formattedInput, player.players[currentPlayer])
+                return 1;
             } else {
-                return 3;
+                return 2;
             }
+        } else {
+            return 3;
         }
     }
 
-    const run = function() {
+    const run = function(userInput) {
         if (player.players.length === 2) {
-            gameBoard.generateBoard();
-            let gameComplete = false;
-            while (!gameComplete) {
-                let inputIsValid = false;
-                while (inputIsValid === false) {
-                    let userInput = prompt(`${player.players[`${currentPlayer}`].name}, please enter a position. Type "quit" to exit.`);
-                    if (userInput === null || userInput === 'quit') {
-                        inputIsValid = true;
-                        gameComplete = true;
-                    } else {
-                        const userInputReturnValue = submitUserInput(userInput);
-                        if (userInputReturnValue === 1) {
-                            inputIsValid = true;
-                        } else if (userInputReturnValue === 2) {
-                            alert('That cell is occupied, please enter another cell')
-                        } else if (userInputReturnValue === 3) {
-                            alert('Please enter a valid input in form "rowcolumn" ie "11", "21", etc.')
-                        } else if (userInput === 0) {
-                            inputIsValid = true;
-                            gameComplete = true;
-                        }
-                    }
-                }
 
-                const winner = gameBoard.checkForWinner();
-                if (winner) {
-                    console.log(`${player.players[winner - 1].name} has won!`)
-                    gameComplete = true;
-                } 
+            const userInputReturnValue = submitUserInput(userInput);
+            if (userInputReturnValue === 1) {
+                const currentSymbol = currentPlayer === 0 ? 'X' : 'O'
+                DOM.updateCell(userInput, currentSymbol)
+                changePlayer();
+            } else if (userInputReturnValue === 2) {
+                alert('That cell is occupied, please enter another cell')
+            } else if (userInputReturnValue === 3) {
+                alert('Please enter a valid input in form "rowcolumn" ie "11", "21", etc.')
+            } 
+
+            const winner = gameBoard.checkForWinner();
+            if (winner) {
+                console.log(`${player.players[winner - 1].name} has won!`)
+                gameComplete = true;
             }
         } else {
             console.log('Need two players!')
@@ -165,4 +149,19 @@ const game = (function() {
     }
 
     return {run};
+})();
+
+const DOM = (function() {
+    const cells = document.querySelectorAll(".cell");
+
+    cells.forEach((element) => element.addEventListener('click', () => game.run(element.getAttribute('id'))));
+
+    const updateCell = function(userInput, symbol) {
+        const selectedCell = document.getElementById(`${userInput}`);
+        const span = document.createElement('span');
+        span.innerText = symbol;
+        selectedCell.appendChild(span);
+    }
+
+    return {updateCell};
 })();
