@@ -1,7 +1,20 @@
-const player = function(token) {
+const player = (function() {
+    const players = {};
 
-    return {token};
-};
+    const createPlayer = function(name) {
+        const numOfPlayers = Object.keys(players);
+        if (numOfPlayers.length < 2) {
+            const token = numOfPlayers.length + 1;
+            players[`P${token}`] = {name, token};
+        }
+    }
+
+    const clearPlayers = function() {
+        players = {};
+    }
+
+    return {players, createPlayer, clearPlayers};
+})();
 
 const gameBoard = (function() {
     const rows = 3;
@@ -28,5 +41,5 @@ const gameBoard = (function() {
 })();
 
 const game = (function() {
-
+    
 })();
