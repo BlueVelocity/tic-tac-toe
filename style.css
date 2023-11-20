@@ -162,9 +162,11 @@ table {
     --main-color: #475569;
     --secondary-color: #e2e8f0;
     --tertiary-color: #f97316;
+    --selection-color: #94a3b8;
     --game-board-size: max(20rem);
     font-size: min(2vh, 4vw);
     font-family: 'Roboto', Arial, Helvetica, sans-serif;
+    box-sizing: border-box;
 }
 
 html {
@@ -197,10 +199,26 @@ body {
     box-shadow: 2px 2px 2px black;
 }
 
+.cell:hover {
+    background-color: var(--selection-color);
+    cursor: pointer;
+    border: 1px solid black;
+}
+
+.cell:active {
+    color: var(--secondary-color);
+    background-color: var(--main-color);
+    border: 1px solid black;
+}
+
 .cell span {
     flex: 1;
     justify-self: center;
     align-self: center;
     text-align: center;
     font-size: 5rem;
+}
+
+.cell span:hover {
+    cursor: pointer;
 }
