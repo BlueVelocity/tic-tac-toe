@@ -5,7 +5,7 @@ const player = (function() {
         const numOfPlayers = Object.keys(players);
         if (numOfPlayers.length < 2) {
             const token = numOfPlayers.length + 1;
-            players[`P${token}`] = {name, token};
+            players[`${token}`] = {name, token};
         }
     }
 
@@ -41,5 +41,22 @@ const gameBoard = (function() {
 })();
 
 const game = (function() {
-    
+    let currentPlayer = 1;
+
+    const getCurrentPlayer = function() {
+        return currentPlayer;
+    }
+
+    const changePlayer = function() {
+        currentPlayer = currentPlayer === 1 ? 2 : 1;
+    }
+
+    const run = function() {
+        let gameComplete = false;
+        while (!gameComplete) {
+            // Game logic
+        }
+    }
+
+    return {getCurrentPlayer, changePlayer};
 })();
