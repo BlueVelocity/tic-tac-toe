@@ -1,5 +1,5 @@
 const player = (function() {
-    const players = []
+    let players = []
 
     const createPlayer = function(name) {
         const numOfPlayers = Object.keys(players);
@@ -59,7 +59,29 @@ const gameBoard = (function() {
         board[userInput[0]][userInput[1]].token = currentPlayer.token;
     }
 
-    return {getBoard, generateBoard, cellIsUnoccupied, updateCell}
+    const checkForWinner = function() {
+        if (board[0][0].token === board[0][1].token &&  board[0][1].token === board[0][2].token && board[0][0].token != 0) {
+            return board[0][0].token;
+        } else if (board[1][0].token === board[1][1].token && board[1][1].token === board[1][2].token && board[1][0].token != 0) {
+            return board[1][0].token;
+        } else if (board[2][0].token === board[2][1].token && board[2][1].token === board[2][2].token && board[2][0].token != 0) {
+            return board[2][0].token;
+        } else if (board[0][0].token === board[1][0].token & board[1][0].token === board[2][0].token && board[0][0].token != 0) {
+            return board[0][0].token;
+        } else if (board[0][1].token === board[1][1].token && board[1][1].token === board[2][1].token && board[0][1].token != 0) {
+            return board[0][1].token;
+        } else if (board[0][2].token === board[1][2].token && board[1][2].token === board[2][2].token && board[0][2].token != 0) {
+            return board[0][2].token;
+        } else if (board[0][0].token === board[1][1].token && board[1][1].token === board[2][2].token && board[0][0].token != 0) {
+            return board[0][0].token;
+        } else if (board[0][2].token === board[1][1].token && board[1][1].token === board[2][0].token && board[0][2].token != 0) {
+            return board[0][2].token;
+        } else {
+            return false;
+        }
+    }
+
+    return {getBoard, generateBoard, cellIsUnoccupied, updateCell, checkForWinner}
 })();
 
 const game = (function() {
@@ -86,7 +108,6 @@ const game = (function() {
     }
 
     const submitUserInput = function(userInput) {
-        console.log(userInput);
         if (userInput === 'quit') {
             return 0;
         } else {
@@ -107,26 +128,36 @@ const game = (function() {
     }
 
     const run = function() {
-        if (Object.keys(player.players).length = 2) {
+        if (player.players.length === 2) {
             gameBoard.generateBoard();
             let gameComplete = false;
             while (!gameComplete) {
                 let inputIsValid = false;
                 while (inputIsValid === false) {
                     let userInput = prompt(`${player.players[`${currentPlayer}`].name}, please enter a position. Type "quit" to exit.`);
-                    const userInputReturnValue = submitUserInput(userInput);
-                    if (userInputReturnValue === 1) {
-                        //isvalid and is empty space
-                        inputIsValid = true;
-                    } else if (userInputReturnValue === 2) {
-                        alert('That cell is occupied, please enter another cell')
-                    } else if (userInputReturnValue === 3) {
-                        alert('Please enter a valid input in form "rowcolumn" ie "11", "21", etc.')
-                    } else if (userInput === 0) {
+                    if (userInput === null || userInput === 'quit') {
                         inputIsValid = true;
                         gameComplete = true;
+                    } else {
+                        const userInputReturnValue = submitUserInput(userInput);
+                        if (userInputReturnValue === 1) {
+                            inputIsValid = true;
+                        } else if (userInputReturnValue === 2) {
+                            alert('That cell is occupied, please enter another cell')
+                        } else if (userInputReturnValue === 3) {
+                            alert('Please enter a valid input in form "rowcolumn" ie "11", "21", etc.')
+                        } else if (userInput === 0) {
+                            inputIsValid = true;
+                            gameComplete = true;
+                        }
                     }
                 }
+
+                const winner = gameBoard.checkForWinner();
+                if (winner) {
+                    console.log(`${player.players[winner - 1].name} has won!`)
+                    gameComplete = true;
+                } 
             }
         } else {
             console.log('Need two players!')
