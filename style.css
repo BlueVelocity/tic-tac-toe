@@ -161,8 +161,9 @@ table {
 :root {
     --main-color: #475569;
     --secondary-color: #e2e8f0;
-    --game-board-size: max(20rem, 200px);
-    font-size: min(2vh, 2vw);
+    --tertiary-color: #f97316;
+    --game-board-size: max(20rem);
+    font-size: min(2vh, 4vw);
     font-family: 'Roboto', Arial, Helvetica, sans-serif;
 }
 
@@ -189,5 +190,17 @@ body {
 }
 
 .cell {
-    background-color: red;
+    display: flex;
+    color: var(--main-color);
+    background-color: var(--secondary-color);
+    border-radius: 5px;
+    box-shadow: 2px 2px 2px black;
+}
+
+.cell span {
+    flex: 1;
+    justify-self: center;
+    align-self: center;
+    text-align: center;
+    font-size: 5rem;
 }
