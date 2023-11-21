@@ -142,11 +142,19 @@ const game = (function() {
 })();
 
 const DOM = (function() {
-    const cells = document.querySelectorAll(".cell");
+    const cells = document.querySelectorAll(".inactive-cell");
     const playerNameInputs = document.querySelectorAll("input");
     const startGameButton = document.getElementById("start-game");
 
-    cells.forEach((element) => element.addEventListener('click', () => game.run(element.getAttribute('id'))))
+    const makeCellsActive = function() {
+        cells.forEach((element) => element.setAttribute('class', 'cell'));
+        cells.forEach((element) => element.addEventListener('click', () => game.run(element.getAttribute('id'))));
+    }
+
+    const makeCellsInactive = function() {
+        cells.forEach((element) => element.setAttribute('class', 'inactive-cell'));
+        cells.forEach((element) => element.removeEventListener('click', () => game.run(element.getAttribute('id'))));
+    }
 
     const setPlayerNames = function() {
         player.clearPlayers();
@@ -174,8 +182,9 @@ const DOM = (function() {
 
     startGameButton.addEventListener('click', function() {
         hideStartButton();
+        makeCellsActive();
         setPlayerNames();
     });
 
-    return {setPlayerNames, disablePlayerNameEntry,  enablePlayerNameEntry, updateCell};
+    return {updateCell};
 })();

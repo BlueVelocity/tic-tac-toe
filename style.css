@@ -217,7 +217,8 @@ body {
     gap: 1rem;
 }
 
-.cell {
+.cell,
+.inactive-cell {
     display: flex;
     color: var(--main-color);
     background-color: var(--secondary-color);
@@ -235,6 +236,12 @@ body {
     align-self: center;
     text-align: center;
     font-size: 5rem;
+}
+
+.inactive-cell {
+    background-color: var(--main-color);
+    border: none;
+    box-shadow: none;
 }
 
 .inputs {
