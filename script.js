@@ -68,21 +68,21 @@ const gameBoard = (function() {
 
     const checkForWinner = function() {
         if (board[0][0].token === board[0][1].token &&  board[0][1].token === board[0][2].token && board[0][0].token != 0) {
-            return board[0][0].token;
+            return [board[0][0].token, '00', '01', '02'];
         } else if (board[1][0].token === board[1][1].token && board[1][1].token === board[1][2].token && board[1][0].token != 0) {
-            return board[1][0].token;
+            return [board[1][0].token, '10', '11', '12'];
         } else if (board[2][0].token === board[2][1].token && board[2][1].token === board[2][2].token && board[2][0].token != 0) {
-            return board[2][0].token;
+            return [board[2][0].token, '20', '21', '22'];
         } else if (board[0][0].token === board[1][0].token & board[1][0].token === board[2][0].token && board[0][0].token != 0) {
-            return board[0][0].token;
+            return [board[0][0].token, '00', '10', '20'];
         } else if (board[0][1].token === board[1][1].token && board[1][1].token === board[2][1].token && board[0][1].token != 0) {
-            return board[0][1].token;
+            return [board[0][1].token, '01', '11', '21'];
         } else if (board[0][2].token === board[1][2].token && board[1][2].token === board[2][2].token && board[0][2].token != 0) {
-            return board[0][2].token;
+            return [board[0][2].token, '02', '12', '12'];
         } else if (board[0][0].token === board[1][1].token && board[1][1].token === board[2][2].token && board[0][0].token != 0) {
-            return board[0][0].token;
+            return [board[0][0].token, '00', '11', '22'];
         } else if (board[0][2].token === board[1][1].token && board[1][1].token === board[2][0].token && board[0][2].token != 0) {
-            return board[0][2].token;
+            return [board[0][2].token, '02', '11', '20'];
         } else {
             return false;
         }
@@ -131,9 +131,11 @@ const game = (function() {
                 changePlayer();
             } 
 
-            const winner = gameBoard.checkForWinner();
-            if (winner) {
-                console.log(`${player.getPlayers()[winner - 1].name} has won!`)
+            const winData = gameBoard.checkForWinner();
+            if (winData) {
+                DOM.makeCellsInactive();
+                DOM.highlightWinningCells(winData[1], winData[2], winData[3]);
+                console.log(`${player.getPlayers()[winData[0] - 1].name} has won!`)
             }
         }
     }
@@ -149,11 +151,21 @@ const DOM = (function() {
     const makeCellsActive = function() {
         cells.forEach((element) => element.setAttribute('class', 'cell'));
         cells.forEach((element) => element.addEventListener('click', () => game.run(element.getAttribute('id'))));
+        playerNameInputs.forEach((element) => element.setAttribute('disabled', 'true'));
     }
 
     const makeCellsInactive = function() {
         cells.forEach((element) => element.setAttribute('class', 'inactive-cell'));
         cells.forEach((element) => element.removeEventListener('click', () => game.run(element.getAttribute('id'))));
+        playerNameInputs.forEach((element) => element.setAttribute('disabled', 'false'))
+    }
+
+    const highlightWinningCells = function(cell1, cell2, cell3) {
+        const winningCells = [cell1, cell2, cell3];
+        winningCells.forEach(function(cellId) {
+            const currentCell = document.getElementById(cellId);
+            currentCell.setAttribute('class', 'winning-cell')
+        })
     }
 
     const setPlayerNames = function() {
@@ -186,5 +198,5 @@ const DOM = (function() {
         setPlayerNames();
     });
 
-    return {updateCell};
+    return {updateCell, makeCellsInactive, highlightWinningCells};
 })();
