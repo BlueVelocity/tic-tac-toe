@@ -311,6 +311,7 @@ body {
 
 .winner-display span {
     font-size: 1.5rem;
+    color: var(--tertiary-color);
 }
 
 .winner-display span::before,
@@ -322,4 +323,17 @@ body {
 
 .inactive-winner-display {
     visibility: hidden;
+}
+
+#reset-button {
+    margin-top: 1rem;
+    width: 7rem;
+    height: 2rem;
+    border-radius: 1rem;
+    border: 5px solid var(--tertiary-color);
+    background-color: var(--secondary-color);
+}
+
+#reset-button:hover {
+    cursor: pointer;
 }

@@ -1,5 +1,5 @@
 const player = (function() {
-    let players = []
+    let players = [];
 
     const getPlayers = function() {
         return players;
@@ -8,9 +8,9 @@ const player = (function() {
     const createNewPlayers = function(name) {
         const token = players.length + 1;
         if (name === '') {
-            players.push({name: `Player${players.length + 1}`, token})
+            players.push({name: `Player${players.length + 1}`, token});
         } else {
-            players.push({name, token})
+            players.push({name, token});
         }
     }
 
@@ -24,7 +24,7 @@ const player = (function() {
 const gameBoard = (function() {
     const rows = 3;
     const columns = 3;
-    const board = [];
+    let board = [];
 
     const getBoard = function() {
         return board;
@@ -78,7 +78,7 @@ const gameBoard = (function() {
         } else if (board[0][1].token === board[1][1].token && board[1][1].token === board[2][1].token && board[0][1].token != 0) {
             return [board[0][1].token, '01', '11', '21'];
         } else if (board[0][2].token === board[1][2].token && board[1][2].token === board[2][2].token && board[0][2].token != 0) {
-            return [board[0][2].token, '02', '12', '12'];
+            return [board[0][2].token, '02', '12', '22'];
         } else if (board[0][0].token === board[1][1].token && board[1][1].token === board[2][2].token && board[0][0].token != 0) {
             return [board[0][0].token, '00', '11', '22'];
         } else if (board[0][2].token === board[1][1].token && board[1][1].token === board[2][0].token && board[0][2].token != 0) {
@@ -88,7 +88,7 @@ const gameBoard = (function() {
         }
     }
 
-    return {getBoard, generateBoard, cellIsUnoccupied, updateCell, checkForWinner}
+    return {getBoard, generateBoard, cellIsUnoccupied, updateCell, checkForWinner, resetBoard}
 })();
 
 const game = (function() {
@@ -96,6 +96,12 @@ const game = (function() {
 
     const changePlayer = function() {
         currentPlayer = currentPlayer === 0 ? 1 : 0;
+    }
+
+    const reset = function() {
+        currentPlayer = 0;
+        gameBoard.resetBoard();
+        player.clearPlayers();
     }
 
     const validInput = function(userInput) {
@@ -115,7 +121,7 @@ const game = (function() {
         if (isValidInput) {
             const formattedInput = convertInputToArray(userInput);
             if (gameBoard.cellIsUnoccupied(formattedInput)) {
-                gameBoard.updateCell(formattedInput, player.getPlayers()[currentPlayer])
+                gameBoard.updateCell(formattedInput, player.getPlayers()[currentPlayer]);
                 return 1;
             }
         } 
@@ -126,8 +132,8 @@ const game = (function() {
 
             const userInputReturnValue = submitUserInput(userInput);
             if (userInputReturnValue === 1) {
-                const currentSymbol = currentPlayer === 0 ? 'X' : 'O'
-                DOM.updateCell(userInput, currentSymbol)
+                const currentSymbol = currentPlayer === 0 ? 'X' : 'O';
+                DOM.updateCell(userInput, currentSymbol);
                 changePlayer();
             } 
 
@@ -140,24 +146,33 @@ const game = (function() {
         }
     }
 
-    return {run};
+    return {run, reset};
 })();
 
 const DOM = (function() {
-    const cells = document.querySelectorAll(".inactive-cell");
-    const playerNameInputs = document.querySelectorAll("input");
-    const startGameButton = document.getElementById("start-game");
+    const cells = document.querySelectorAll('.inactive-cell');
+    const playerNameInputs = document.querySelectorAll('input');
+    const startGameButton = document.getElementById('start-game');
+    const output = document.getElementById('output');
+    const outputSpan = document.getElementById('winner-output');
+    const resetButton = document.getElementById('reset-button');
 
     const makeCellsActive = function() {
         cells.forEach((element) => element.setAttribute('class', 'cell'));
         cells.forEach((element) => element.addEventListener('click', () => game.run(element.getAttribute('id'))));
-        playerNameInputs.forEach((element) => element.setAttribute('disabled', 'true'));
     }
 
     const makeCellsInactive = function() {
         cells.forEach((element) => element.setAttribute('class', 'inactive-cell'));
         cells.forEach((element) => element.removeEventListener('click', () => game.run(element.getAttribute('id'))));
-        playerNameInputs.forEach((element) => element.setAttribute('disabled', 'false'))
+    }
+
+    const clearCells = function() {
+        cells.forEach((element) => {
+            if (element.firstElementChild != null) {
+                element.innerHTML = '';
+            }
+        });
     }
 
     const highlightWinningCells = function(cell1, cell2, cell3) {
@@ -169,14 +184,13 @@ const DOM = (function() {
     }
 
     const showWinnerOutput = function(winnerMessage) {
-        const output = document.getElementById('output');
-        const outputSpan = document.getElementById('winner-output');
         outputSpan.innerText = winnerMessage;
-        output.setAttribute('style', 'visibility: visible;')
+        output.setAttribute('style', 'visibility: visible;');
     }
 
     const resetWinnerOutput = function() {
-
+        outputSpan.innerText = '';
+        output.setAttribute('style', 'visibility: hidden;');
     }
 
     const setPlayerNames = function() {
@@ -185,15 +199,19 @@ const DOM = (function() {
     }
 
     const hideStartButton = function() {
-        startGameButton.setAttribute('style', 'visibility: hidden;')
+        startGameButton.setAttribute('style', 'visibility: hidden;');
+    }
+
+    const showStartButton = function() {
+        startGameButton.setAttribute('style', 'visibility: visible;');
     }
 
     const disablePlayerNameEntry = function() {
-        playerNameInputs.forEach((element) => element.setAttribute('disabled', 'true'))
+        playerNameInputs.forEach((element) => element.setAttribute('disabled', 'true'));
     }
 
     const enablePlayerNameEntry = function() {
-        playerNameInputs.forEach((element) => element.setAttribute('disabled', 'false'))
+        playerNameInputs.forEach((element) => element.removeAttribute('disabled'));
     }
 
     const updateCell = function(userInput, symbol) {
@@ -203,9 +221,19 @@ const DOM = (function() {
         selectedCell.appendChild(span);
     }
 
+    resetButton.addEventListener('click', function() {
+        resetWinnerOutput();
+        makeCellsInactive();
+        clearCells();
+        enablePlayerNameEntry();
+        showStartButton();
+        game.reset();
+    });
+
     startGameButton.addEventListener('click', function() {
         hideStartButton();
         makeCellsActive();
+        disablePlayerNameEntry();
         setPlayerNames();
     });
 
