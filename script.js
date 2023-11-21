@@ -144,13 +144,17 @@ const game = (function() {
 const DOM = (function() {
     const cells = document.querySelectorAll(".cell");
     const playerNameInputs = document.querySelectorAll("input");
-    const submitButton = document.getElementById("start-game");
+    const startGameButton = document.getElementById("start-game");
 
     cells.forEach((element) => element.addEventListener('click', () => game.run(element.getAttribute('id'))))
 
     const setPlayerNames = function() {
         player.clearPlayers();
         playerNameInputs.forEach((input) => player.createNewPlayers(input.value));
+    }
+
+    const hideStartButton = function() {
+        startGameButton.setAttribute('style', 'visibility: hidden;')
     }
 
     const disablePlayerNameEntry = function() {
@@ -168,8 +172,8 @@ const DOM = (function() {
         selectedCell.appendChild(span);
     }
 
-    submitButton.addEventListener('click', function(event) {
-        event.preventDefault();
+    startGameButton.addEventListener('click', function() {
+        hideStartButton();
         setPlayerNames();
     });
 
