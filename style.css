@@ -179,7 +179,7 @@ html {
 body {
     display: grid;
     grid-template-columns: 1fr var(--game-board-size) 1fr;
-    grid-template-rows: 0.8fr var(--game-board-size) 1fr;
+    grid-template-rows: 0.8fr var(--game-board-size) repeat(2, 0.5fr);
     width: 100%;
     height: 100%;
 }
@@ -299,4 +299,27 @@ body {
 
 #start-game:active {
     background-color: var(--main-color);
+}
+
+#output {
+    grid-area: 4 / 2 / 5 / 3;
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    align-items: center;
+}
+
+.winner-display span {
+    font-size: 1.5rem;
+}
+
+.winner-display span::before,
+.winner-display span::after {
+    font-size: 2rem;
+    margin: 0 1rem;
+    content: '\1F389';
+}
+
+.inactive-winner-display {
+    visibility: hidden;
 }

@@ -135,7 +135,7 @@ const game = (function() {
             if (winData) {
                 DOM.makeCellsInactive();
                 DOM.highlightWinningCells(winData[1], winData[2], winData[3]);
-                console.log(`${player.getPlayers()[winData[0] - 1].name} has won!`)
+                DOM.showWinnerOutput(`${player.getPlayers()[winData[0] - 1].name} wins!`);
             }
         }
     }
@@ -164,8 +164,19 @@ const DOM = (function() {
         const winningCells = [cell1, cell2, cell3];
         winningCells.forEach(function(cellId) {
             const currentCell = document.getElementById(cellId);
-            currentCell.setAttribute('class', 'winning-cell')
+            currentCell.setAttribute('class', 'winning-cell');
         })
+    }
+
+    const showWinnerOutput = function(winnerMessage) {
+        const output = document.getElementById('output');
+        const outputSpan = document.getElementById('winner-output');
+        outputSpan.innerText = winnerMessage;
+        output.setAttribute('style', 'visibility: visible;')
+    }
+
+    const resetWinnerOutput = function() {
+
     }
 
     const setPlayerNames = function() {
@@ -198,5 +209,5 @@ const DOM = (function() {
         setPlayerNames();
     });
 
-    return {updateCell, makeCellsInactive, highlightWinningCells};
+    return {updateCell, showWinnerOutput, makeCellsInactive, highlightWinningCells};
 })();
