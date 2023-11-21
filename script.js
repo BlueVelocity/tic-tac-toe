@@ -1,11 +1,16 @@
 const player = (function() {
     let players = []
 
-    const createPlayer = function(name) {
-        const numOfPlayers = Object.keys(players);
-        if (numOfPlayers.length < 2) {
-            const token = numOfPlayers.length + 1;
-            players.push({name, token});
+    const getPlayers = function() {
+        return players;
+    } 
+
+    const createNewPlayers = function(name) {
+        const token = players.length + 1;
+        if (name === '') {
+            players.push({name: `Player${players.length + 1}`, token})
+        } else {
+            players.push({name, token})
         }
     }
 
@@ -13,7 +18,7 @@ const player = (function() {
         players = [];
     }
 
-    return {players, createPlayer, clearPlayers};
+    return {getPlayers, createNewPlayers, clearPlayers};
 })();
 
 const gameBoard = (function() {
@@ -89,10 +94,6 @@ const gameBoard = (function() {
 const game = (function() {
     let currentPlayer = 0;
 
-    const getCurrentPlayer = function() {
-        return currentPlayer;
-    }
-
     const changePlayer = function() {
         currentPlayer = currentPlayer === 0 ? 1 : 0;
     }
@@ -114,37 +115,26 @@ const game = (function() {
         if (isValidInput) {
             const formattedInput = convertInputToArray(userInput);
             if (gameBoard.cellIsUnoccupied(formattedInput)) {
-                gameBoard.updateCell(formattedInput, player.players[currentPlayer])
+                gameBoard.updateCell(formattedInput, player.getPlayers()[currentPlayer])
                 return 1;
-            } else {
-                return 2;
             }
-        } else {
-            return 3;
-        }
+        } 
     }
 
     const run = function(userInput) {
-        if (player.players.length === 2) {
+        if (player.getPlayers().length === 2) {
 
             const userInputReturnValue = submitUserInput(userInput);
             if (userInputReturnValue === 1) {
                 const currentSymbol = currentPlayer === 0 ? 'X' : 'O'
                 DOM.updateCell(userInput, currentSymbol)
                 changePlayer();
-            } else if (userInputReturnValue === 2) {
-                alert('That cell is occupied, please enter another cell')
-            } else if (userInputReturnValue === 3) {
-                alert('Please enter a valid input in form "rowcolumn" ie "11", "21", etc.')
             } 
 
             const winner = gameBoard.checkForWinner();
             if (winner) {
-                console.log(`${player.players[winner - 1].name} has won!`)
-                gameComplete = true;
+                console.log(`${player.getPlayers()[winner - 1].name} has won!`)
             }
-        } else {
-            console.log('Need two players!')
         }
     }
 
@@ -153,8 +143,23 @@ const game = (function() {
 
 const DOM = (function() {
     const cells = document.querySelectorAll(".cell");
+    const playerNameInputs = document.querySelectorAll("input");
+    const submitButton = document.getElementById("start-game");
 
-    cells.forEach((element) => element.addEventListener('click', () => game.run(element.getAttribute('id'))));
+    cells.forEach((element) => element.addEventListener('click', () => game.run(element.getAttribute('id'))))
+
+    const setPlayerNames = function() {
+        player.clearPlayers();
+        playerNameInputs.forEach((input) => player.createNewPlayers(input.value));
+    }
+
+    const disablePlayerNameEntry = function() {
+        playerNameInputs.forEach((element) => element.setAttribute('disabled', 'true'))
+    }
+
+    const enablePlayerNameEntry = function() {
+        playerNameInputs.forEach((element) => element.setAttribute('disabled', 'false'))
+    }
 
     const updateCell = function(userInput, symbol) {
         const selectedCell = document.getElementById(`${userInput}`);
@@ -163,5 +168,10 @@ const DOM = (function() {
         selectedCell.appendChild(span);
     }
 
-    return {updateCell};
+    submitButton.addEventListener('click', function(event) {
+        event.preventDefault();
+        setPlayerNames();
+    });
+
+    return {setPlayerNames, disablePlayerNameEntry,  enablePlayerNameEntry, updateCell};
 })();
