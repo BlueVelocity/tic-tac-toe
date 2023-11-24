@@ -283,7 +283,7 @@ body {
 #start-game {
     position: fixed;
     left: 50%;
-    top: 47%;
+    top: 45%;
     translate: -50% -50%;
     width: 15rem;
     height: 4rem;
