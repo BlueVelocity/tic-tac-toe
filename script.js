@@ -66,6 +66,24 @@ const gameBoard = (function() {
         board[userInput[0]][userInput[1]].token = currentPlayer.token;
     }
 
+    const checkForTie = function() {
+        const fullBoardOccupation = rows * columns;
+        let occupationCounter = 0;
+        board.forEach( (row) => {
+            row.forEach( (boardTile) => {
+                if (boardTile.token != 0) {
+                    occupationCounter++;
+                }
+            })
+        })
+
+        if (occupationCounter === fullBoardOccupation) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     const checkForWinner = function() {
         if (board[0][0].token === board[0][1].token &&  board[0][1].token === board[0][2].token && board[0][0].token != 0) {
             return [board[0][0].token, '00', '01', '02'];
@@ -88,7 +106,7 @@ const gameBoard = (function() {
         }
     }
 
-    return {getBoard, generateBoard, cellIsUnoccupied, updateCell, checkForWinner, resetBoard}
+    return {getBoard, generateBoard, cellIsUnoccupied, updateCell, checkForTie, checkForWinner, resetBoard}
 })();
 
 const game = (function() {
@@ -142,6 +160,8 @@ const game = (function() {
                 DOM.makeCellsInactive();
                 DOM.highlightWinningCells(winData[1], winData[2], winData[3]);
                 DOM.showWinnerOutput(`${player.getPlayers()[winData[0] - 1].name} wins!`);
+            } else if(gameBoard.checkForTie()) {
+                DOM.showWinnerOutput(`It's a Tie!`);
             }
         }
     }
