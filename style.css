@@ -218,7 +218,6 @@ body {
 }
 
 .cell,
-.inactive-cell,
 .winning-cell {
     display: flex;
     color: var(--main-color);
@@ -241,9 +240,7 @@ body {
 }
 
 .inactive-cell {
-    background-color: var(--main-color);
-    border: none;
-    box-shadow: none;
+    visibility: hidden;
 }
 
 .winning-cell {
